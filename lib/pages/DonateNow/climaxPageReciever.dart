@@ -1,11 +1,5 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:login/deGea/signUpInfo.dart';
-import 'package:login/rakibul/loginPage.dart';
-import 'package:login/pages/fromNavigationBar/NotificationPage.dart';
-import 'package:login/pages/fromNavigationBar/historyPage.dart';
 import 'package:login/Usable%20Clasees.dart';
 
 class Climax extends StatefulWidget {
@@ -119,13 +113,13 @@ class _ClimaxState extends State<Climax> {
                                          }).toList(),
                                        onChanged: (value) {
                                          setState(() {
-                                           _selectedReason = value as String?;
+                                           _selectedReason = value;
                                          });
                                        },
                                        icon: Container(
 
                                            decoration: BoxDecoration(
-                                             color: Colors.grey.withOpacity(0.5),
+                                             color: Colors.grey.withValues(alpha: 0.5),
                                              borderRadius: BorderRadius.circular(100),
                                            ),
                                            child: Icon(Icons.arrow_drop_down,
@@ -180,7 +174,7 @@ class _ClimaxState extends State<Climax> {
                                         Future.delayed(Duration(seconds: 1), () {
                                         Navigator.pushNamed(context, '/mainPage'
                                         ).then((_) {
-                                          Navigator.of(context).pop();
+                                          if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                                         });
                                         });
                                       },

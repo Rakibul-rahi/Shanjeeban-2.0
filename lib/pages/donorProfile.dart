@@ -145,7 +145,7 @@ class _donorProfileState extends State<donorProfile> {
                               color: Colors.grey.shade800, // Adjust the color as needed
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha: 0.3),
                                   spreadRadius: 2,
                                   blurRadius: 3,
                                   offset: Offset(0, 2), // Adjust the shadow offset as needed
@@ -159,9 +159,9 @@ class _donorProfileState extends State<donorProfile> {
                                     scheme: 'tel',
                                     path: strNumber,
                                   );
-                                  if (await canLaunch(url.toString())) {
+                                  if (await canLaunchUrl(url)) {
                                     print("Launched");
-                                    await launch(url.toString());
+                                    await launchUrl(url);
                                   } else {
                                     print('Cannot Launch');
                                   }
@@ -181,7 +181,7 @@ class _donorProfileState extends State<donorProfile> {
                               color: Colors.grey.shade800, // Adjust the color as needed
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha: 0.3),
                                   spreadRadius: 1,
                                   blurRadius: 1,
                                   offset: Offset(0, 2), // Adjust the shadow offset as needed
@@ -333,9 +333,9 @@ class _donorProfileState extends State<donorProfile> {
                           Center(
                             child: ElevatedButton(
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF900000)),
-                                elevation: MaterialStateProperty.all<double>(10.0),
-                                shape: MaterialStateProperty.all<OutlinedBorder>(
+                                backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF900000)),
+                                elevation: WidgetStateProperty.all<double>(10.0),
+                                shape: WidgetStateProperty.all<OutlinedBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25.0),
                                   ),

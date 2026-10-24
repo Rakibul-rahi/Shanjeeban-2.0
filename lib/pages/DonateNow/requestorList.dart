@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'recieversList.dart';
 
@@ -38,7 +37,7 @@ class _RequestorListState extends State<RequestorList> {
         'bloodGroup' : bloodGroup,
       },
     ).then((_) {
-      Navigator.of(context).pop();
+      if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
     });
     });
   }

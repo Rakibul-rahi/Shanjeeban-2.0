@@ -1,14 +1,8 @@
 import 'dart:typed_data';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:login/Smj/add_data.dart';
 import 'package:login/Smj/utils.dart';
-import 'package:login/main.dart';
 
 class editProfile extends StatefulWidget {
   const editProfile({super.key});
@@ -40,7 +34,7 @@ class _editProfileState extends State<editProfile> {
   var   lastDonationInput ;
   DateTime? selectedDonationDate;
   String imageURL = "";
-
+  String docID = "";
   int flagCreateAcc = 1;
 
   /////////////////////////////////////////////  TEXT CONTROLLERS   ///////////////////////////////////////////////
@@ -255,7 +249,10 @@ class _editProfileState extends State<editProfile> {
 
   void saveProfile() async{
 
-    String resp = await StoreData().saveData(file:  _image!);
+    String resp = await StoreData().saveData(
+      file: _image!,
+      docId: docID,
+    );
 
     setState(() {
       imageURL = resp;
@@ -1026,10 +1023,10 @@ class _editProfileState extends State<editProfile> {
                 },
 
                 style: ButtonStyle(
-                  elevation: MaterialStateProperty.all<double>(10.0),
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                  elevation: WidgetStateProperty.all<double>(10.0),
+                  backgroundColor: WidgetStateProperty.all<Color>(Colors.red),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                  padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
                     EdgeInsets.symmetric(vertical: 12, horizontal: 30),
                   ),
 

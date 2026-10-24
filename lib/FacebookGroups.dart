@@ -1,14 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:login/pages/leaderboard/PointsScreen.dart';
-import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class FacebookGroups extends StatelessWidget {
   @override
@@ -68,9 +61,8 @@ class FacebookGroups extends StatelessWidget {
                             }
                         );
                         Future.delayed(Duration(seconds: 3), () {
-                        launch('https://www.facebook.com/groups/BloodDonation24'
-                        ).then((_) {
-                   Navigator.of(context).pop();
+                        launchUrl(Uri.parse('https://www.facebook.com/groups/BloodDonation24'), mode: LaunchMode.externalApplication).then((_) {
+                   if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                         });
                      });
                       }
@@ -90,9 +82,8 @@ class FacebookGroups extends StatelessWidget {
                    }
                     );
                         Future.delayed(Duration(seconds: 3), () {
-                        launch('https://www.facebook.com/groups/BloodDonation24'
-                        ).then((_) {
-                     Navigator.of(context).pop();
+                        launchUrl(Uri.parse('https://www.facebook.com/groups/BloodDonation24'), mode: LaunchMode.externalApplication).then((_) {
+                     if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                     });
                    });
                       }
@@ -111,9 +102,8 @@ class FacebookGroups extends StatelessWidget {
                             }
                         );
                         Future.delayed(Duration(seconds: 3), () {
-                        launch('https://www.facebook.com/groups/dhakablooddonation'
-                        ).then((_) {
-                        Navigator.of(context).pop();
+                        launchUrl(Uri.parse('https://www.facebook.com/groups/dhakablooddonation'), mode: LaunchMode.externalApplication).then((_) {
+                        if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                          });
                       });
                       }
@@ -132,9 +122,8 @@ class FacebookGroups extends StatelessWidget {
                             }
                         );
                         Future.delayed(Duration(seconds: 3), () {
-                        launch('https://www.facebook.com/groups/730642890759835'
-                        ).then((_) {
-                          Navigator.of(context).pop();
+                        launchUrl(Uri.parse('https://www.facebook.com/groups/730642890759835'), mode: LaunchMode.externalApplication).then((_) {
+                          if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                         });
                         });
                       }

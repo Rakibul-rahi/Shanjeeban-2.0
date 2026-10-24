@@ -1,13 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:login/FacebookGroups.dart';
-import 'package:login/deGea/signUpInfo.dart';
-import 'package:login/rakibul/loginPage.dart';
 import 'package:login/pages/fromNavigationBar/NotificationPage.dart';
 import 'package:login/pages/fromNavigationBar/historyPage.dart';
 
@@ -160,7 +154,7 @@ class _HomeState extends State<Home> {
                                       'docID' : docID,
                                     }
                                 ).then((_) {
-                                  Navigator.of(context).pop();
+                                  if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                                 });
 
                                   }
@@ -172,7 +166,7 @@ class _HomeState extends State<Home> {
                                     'docID' : docID,
                                   }
                               ).then((_) {
-                                Navigator.of(context).pop();
+                                if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                               });
 
                               });
@@ -399,7 +393,7 @@ class _HomeState extends State<Home> {
                           'docID': docID,
                         },
                       ).then((_) {
-                      Navigator.of(context).pop();
+                      if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                           });
                        });
                     } else {
@@ -410,7 +404,7 @@ class _HomeState extends State<Home> {
                           'docID': docID,
                         },
                       ).then((_) {
-                        Navigator.of(context).pop();
+                        if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                       });
                    });
                     }
@@ -478,7 +472,7 @@ class _HomeState extends State<Home> {
 
                         }
                     ).then((_) {
-                Navigator.of(context).pop();
+                if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                  });
                 });
                   },
@@ -543,7 +537,7 @@ class _HomeState extends State<Home> {
                     Future.delayed(Duration(seconds: 1), () {
                     Navigator.pushNamed(context, '/pointScreen'
                     ).then((_) {
-                      Navigator.of(context).pop();
+                      if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                     });
                     });
 
@@ -605,7 +599,7 @@ class _HomeState extends State<Home> {
                         builder: (context) => FacebookGroups(), // Replace with your screen/widget
                       ),
                     ).then((_) {
-                      Navigator.of(context).pop();
+                      if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                     });
                     });
                   },
@@ -662,7 +656,7 @@ class _HomeState extends State<Home> {
                     Future.delayed(Duration(seconds: 1), () {
                     Navigator.pushNamed(context, '/emergency'
                     ).then((_) {
-                   Navigator.of(context).pop();
+                   if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                      });
                    });
 

@@ -1,13 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:login/deGea/signUpInfo.dart';
-import 'package:login/rakibul/loginPage.dart';
-import 'package:login/pages/fromNavigationBar/NotificationPage.dart';
-import 'package:login/pages/fromNavigationBar/historyPage.dart';
 
 
 class BloodRequestForm extends StatefulWidget {
@@ -144,7 +138,7 @@ class _BloodRequestFormState extends State<BloodRequestForm> {
           'blood' : rokto,
         },
       ).then((_) {
-        Navigator.of(context).pop();
+        if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
       });
       });
     } else {
@@ -196,7 +190,7 @@ class _BloodRequestFormState extends State<BloodRequestForm> {
           'docID': docID,
         },
       ).then((_) {
-        Navigator.of(context).pop();
+        if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
       });
       });
     }
@@ -349,7 +343,7 @@ class _BloodRequestFormState extends State<BloodRequestForm> {
                             },
                             icon: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.5),
+                                  color: Colors.grey.withValues(alpha: 0.5),
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: Icon(Icons.arrow_drop_down,
@@ -405,7 +399,7 @@ class _BloodRequestFormState extends State<BloodRequestForm> {
                             },
                             icon: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.5),
+                                  color: Colors.grey.withValues(alpha: 0.5),
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: Icon(Icons.arrow_drop_down,
@@ -458,7 +452,7 @@ class _BloodRequestFormState extends State<BloodRequestForm> {
                             },
                             icon: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.5),
+                                  color: Colors.grey.withValues(alpha: 0.5),
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: Icon(Icons.arrow_drop_down,
@@ -538,9 +532,9 @@ class _BloodRequestFormState extends State<BloodRequestForm> {
                         SizedBox(height: 25.0),
                         ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF900000)),
-                            elevation: MaterialStateProperty.all<double>(10.0),
-                            shape: MaterialStateProperty.all<OutlinedBorder>(
+                            backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF900000)),
+                            elevation: WidgetStateProperty.all<double>(10.0),
+                            shape: WidgetStateProperty.all<OutlinedBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25.0),
                               ),

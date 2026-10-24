@@ -26,9 +26,9 @@ class CustomElevated extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(backgroundColor),
-        elevation: MaterialStateProperty.all<double>(10.0),
-        shape: MaterialStateProperty.all<OutlinedBorder>(
+        backgroundColor: WidgetStateProperty.all<Color>(backgroundColor),
+        elevation: WidgetStateProperty.all<double>(10.0),
+        shape: WidgetStateProperty.all<OutlinedBorder>(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),

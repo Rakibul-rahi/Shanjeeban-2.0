@@ -1,14 +1,9 @@
 import 'dart:typed_data';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:login/Smj/add_data.dart';
 import 'package:login/Smj/utils.dart';
-import 'package:login/main.dart';
 
 class editUserProfile extends StatefulWidget {
   const editUserProfile({super.key});
@@ -267,7 +262,10 @@ class _editUserProfileState extends State<editUserProfile> {
   }
   void saveProfile() async{
 
-    String resp = await StoreData().saveData(file:  _image!);
+    String resp = await StoreData().saveData(
+      file: _image!,
+      docId: docID,
+    );
 
     setState(() {
       imageURL = resp;
@@ -299,7 +297,6 @@ class _editUserProfileState extends State<editUserProfile> {
       }
 
       String userEmail = emailInput.text.toString().trim();
-      String userPassword = passwordInput.text.toString().trim();
       String userFullName = fullNameInput.text.toString().trim();
       String userPhoneNumber = phoneNumberInput.text.toString().trim();
       String userHandle = handleInput.text.toString().trim();
@@ -321,11 +318,10 @@ class _editUserProfileState extends State<editUserProfile> {
 
       Map <String, dynamic> updatedUserInfo = {
         "name" : userFullName,
-        "pass" : userPassword,
         "number" : etaki244,
         "email" : userEmail,
         "handle" : userHandle,
-        "dateOfBirth" : userDateOfBirth,
+        "dateOfBirth" : FieldValue.delete(), // purge legacy public copy
         "district" : district,
         "thana" : thana,
         "age" : boyosh,
@@ -341,6 +337,12 @@ class _editUserProfileState extends State<editUserProfile> {
 
       try {
         await collectionReference.doc(docID).update(updatedUserInfo);
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(docID)
+            .collection("private")
+            .doc("info")
+            .set({"dateOfBirth": userDateOfBirth}, SetOptions(merge: true));
         print(" ");
         print('successfully updated');
         snackBarMessage('Successfully updated user info.');
@@ -380,7 +382,6 @@ class _editUserProfileState extends State<editUserProfile> {
       final Map<String, dynamic> formData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
       fullNameInput.text = formData['name'];
-      passwordInput.text = formData['pass'];
       phoneNumberInput.text = formData['number'].toString();
       emailInput.text = formData['email'];
       handleInput.text = formData['handle'];
@@ -658,59 +659,6 @@ class _editUserProfileState extends State<editUserProfile> {
                           errorStyle: TextStyle(color: Colors.red),
                         ),
                         validator: _validateEmail,
-                      ),
-                      SizedBox(height: 15,),
-                      TextFormField(
-                        controller: passwordInput,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        obscureText: true,
-                        obscuringCharacter: '*',
-                        cursorColor: Colors.black,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                        ),
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.key,
-                            color: Colors.black,
-                          ),
-                          labelText: 'Password',
-                          labelStyle: TextStyle(
-                            color: Colors.black,
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(13),
-                            borderSide: BorderSide(
-                              color: Colors.green,
-                              width: 4,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(13),
-                            borderSide: BorderSide(
-                              color: Color(0xff2a2a2b),
-                              width: 4,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(13),
-                            borderSide: BorderSide(
-                              color: Color(0xffc22333),
-                              width: 4,
-                            ),
-                          ),
-                          errorStyle: TextStyle(color: Colors.red),
-                        ),
-                        validator: _validatePassword,
                       ),
                       SizedBox(height: 15,),
                       datePicker(),
@@ -1139,10 +1087,10 @@ class _editUserProfileState extends State<editUserProfile> {
                 },
 
                 style: ButtonStyle(
-                  elevation: MaterialStateProperty.all<double>(10.0),
-                  backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF000D29)),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                  elevation: WidgetStateProperty.all<double>(10.0),
+                  backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF000D29)),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                  padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
                     EdgeInsets.symmetric(vertical: 12, horizontal: 30),
                   ),
 

@@ -1,16 +1,8 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:login/deGea/signUpInfo.dart';
 import 'package:login/pages/IntroScreen/IntroPageOne.dart';
 import 'package:login/pages/IntroScreen/IntroPageThree.dart';
 import 'package:login/pages/IntroScreen/IntroPageTwo.dart';
-import 'package:login/rakibul/loginPage.dart';
-import 'package:login/pages/fromNavigationBar/NotificationPage.dart';
-import 'package:login/pages/fromNavigationBar/historyPage.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:login/Usable Clasees.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -59,7 +51,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     Navigator.pushNamed(
                       context, '/loginPage',
                     ).then((_) {
-                      Navigator.of(context).pop();
+                      if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                     });
                     });
                   },
@@ -87,7 +79,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         Navigator.pushNamed(
                           context, '/loginPage',
                         ).then((_) {
-                          Navigator.of(context).pop();
+                          if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                         });
                         });
                       },

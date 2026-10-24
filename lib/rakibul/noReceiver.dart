@@ -130,7 +130,7 @@ class _noReciverState extends State<noReciver> {
                       color: Color(0xFFD4E3E1),
                       borderRadius: BorderRadius.all(Radius.circular(30)),
                       boxShadow: [BoxShadow(
-                          color: Colors.red.shade500.withOpacity(0.5),
+                          color: Colors.red.shade500.withValues(alpha: 0.5),
                           blurRadius: 20,
                           offset: Offset(0, 10)
                       )]
@@ -201,7 +201,7 @@ class _noReciverState extends State<noReciver> {
                           'docID': docID,
                         },
                       ).then((_) {
-                        Navigator.of(context).pop();
+                        if (context.mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
                       });
                       });
 

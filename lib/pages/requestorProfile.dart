@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../Usable Clasees.dart';
 
 class RequestorProfile extends StatefulWidget {
   @override
@@ -163,7 +163,7 @@ class _RequestorProfileState extends State<RequestorProfile> {
                               color: Colors.grey.shade800, // Adjust the color as needed
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha: 0.3),
                                   spreadRadius: 2,
                                   blurRadius: 3,
                                   offset: Offset(0, 2), // Adjust the shadow offset as needed
@@ -177,9 +177,9 @@ class _RequestorProfileState extends State<RequestorProfile> {
                                     scheme: 'tel',
                                     path: strNumber,
                                   );
-                                  if (await canLaunch(url.toString())) {
+                                  if (await canLaunchUrl(url)) {
                                     print("Launched");
-                                    await launch(url.toString());
+                                    await launchUrl(url);
                                   } else {
                                     print('Cannot Launch');
                                   }
@@ -198,7 +198,7 @@ class _RequestorProfileState extends State<RequestorProfile> {
                               color: Colors.grey.shade800, // Adjust the color as needed
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha: 0.3),
                                   spreadRadius: 1,
                                   blurRadius: 1,
                                   offset: Offset(0, 2), // Adjust the shadow offset as needed
@@ -370,7 +370,13 @@ class _RequestorProfileState extends State<RequestorProfile> {
                       ),
                     ),
                     SizedBox(height: 20,),
-                    CustomElevated(),
+                    CustomElevated(
+                      requestorUid: requestorUid,
+                      bloodGroup: bloodGroup,
+                      requestorName: name,
+                      hospital: hospital,
+                      quantity: quan,
+                    ),
                     SizedBox(height: 20,),
 
                   ],
@@ -386,28 +392,82 @@ class _RequestorProfileState extends State<RequestorProfile> {
   }
 }
 
-class CustomElevated extends StatelessWidget {
+class CustomElevated extends StatefulWidget {
   const CustomElevated({
     super.key,
+    required this.requestorUid,
+    required this.bloodGroup,
+    this.requestorName,
+    this.hospital,
+    this.quantity,
   });
+
+  final String? requestorUid;
+  final String bloodGroup;
+  final String? requestorName;
+  final String? hospital;
+  final int? quantity;
+
+  @override
+  State<CustomElevated> createState() => _CustomElevatedState();
+}
+
+class _CustomElevatedState extends State<CustomElevated> {
+  bool _saving = false;
+
+  Future<void> _donate() async {
+    final donor = FirebaseAuth.instance.currentUser;
+    final messenger = ScaffoldMessenger.of(context);
+    if (donor == null || widget.requestorUid == null) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Please log in again to donate.')),
+      );
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      await FirebaseFirestore.instance
+          .collection('donations')
+          .doc('${donor.uid}_${widget.requestorUid}')
+          .set({
+        'donorUid': donor.uid,
+        'donorEmail': donor.email,
+        'receiverUid': widget.requestorUid,
+        'receiverName': widget.requestorName,
+        'bloodGroup': widget.bloodGroup,
+        'hospital': widget.hospital,
+        'quantity': widget.quantity,
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Thank you! Your donation offer was sent.')),
+      );
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Could not save donation: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF900000)),
-        elevation: MaterialStateProperty.all<double>(10.0),
-        shape: MaterialStateProperty.all<OutlinedBorder>(
+        backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF900000)),
+        elevation: WidgetStateProperty.all<double>(10.0),
+        shape: WidgetStateProperty.all<OutlinedBorder>(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25.0),
           ),
         ),
       ),
-      onPressed: (){
-
-      },
+      onPressed: _saving ? null : _donate,
       child: Text(
-        'DONATE NOW',
+        _saving ? 'SAVING...' : 'DONATE NOW',
         style: TextStyle(
           color: Colors.white,
           fontFamily: 'Classy',

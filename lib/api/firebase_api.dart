@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:login/main.dart';
 
 
@@ -14,15 +12,19 @@ class Firebase_api {
     //request permission from use (will prompt user)
     await _firebaseMessaging.requestPermission();
     Future<void> getFCMToken() async {
-      String? fcmToken = await FirebaseMessaging.instance.getToken();
-      print('FCM Token: $fcmToken');
-      await FirebaseMessaging.instance.subscribeToTopic('all_users');
-
+      try {
+        String? fcmToken = await FirebaseMessaging.instance.getToken();
+        print('FCM Token: $fcmToken');
+        await FirebaseMessaging.instance.subscribeToTopic('all_users');
+      } catch (e) {
+        // getToken/subscribeToTopic fail on web (no VAPID key) and when offline.
+        print('FCM setup skipped: $e');
+      }
     }
     getFCMToken();
     //fetch the FCM token for this device
     Future<void> storeFCMToken(String userId, String fcmToken) async {
-      await FirebaseFirestore.instance.collection('newUsersCredentials').doc(userId).update({
+      await FirebaseFirestore.instance.collection('newUserCredentials').doc(userId).update({
         'fcmToken': fcmToken,
       });
     }

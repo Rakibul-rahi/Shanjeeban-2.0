@@ -1,14 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:login/FacebookGroups.dart';
 import 'package:login/firebase_options.dart';
 import 'package:login/mainPage.dart';
-import 'package:login/pages/ChatRoom.dart';
-import 'package:login/pages/EditProfile.dart';
 import 'package:login/pages/Emergency.dart';
-import 'package:login/pages/ProfileEdit.dart';
 import 'package:login/pages/RequestForBlood/donorList.dart';
 import 'package:login/pages/base.dart';
 import 'package:login/pages/editUserProfile.dart';
@@ -18,7 +13,6 @@ import 'package:login/pages/leaderboard/PointsScreen.dart';
 import 'package:login/pages/IntroScreen/onboarding_screen.dart';
 import 'package:login/pages/donorProfile.dart';
 import 'package:login/pages/requestorProfile.dart';
-import 'package:login/pages/splashScreen.dart';
 import 'package:login/rakibul/noDonor.dart';
 import 'package:login/pages/DonateNow/profilePageReciever.dart';
 import 'package:login/pages/RequestForBlood/requestPage.dart';
@@ -32,7 +26,6 @@ import 'pages/profilePage.dart';
 import 'package:login/pages/DonateNow/recieversList.dart';
 import 'package:login/pages/RequestForBlood/donatorsList.dart';
 import 'package:login/pages/RequestForBlood/profilePageDonators.dart';
-import 'package:login/pages/DonateNow/climaxPageReciever.dart';
 import 'package:login/pages/DonateNow/requestorList.dart';
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -41,7 +34,12 @@ void main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await Firebase_api().initNotifications();
+  try {
+    await Firebase_api().initNotifications();
+  } catch (e) {
+    // Push notifications are optional; never block app start (e.g. web/no permission).
+    debugPrint('Notification setup failed: $e');
+  }
 
 
 

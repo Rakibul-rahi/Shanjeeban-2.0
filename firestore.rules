@@ -1,0 +1,103 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isBloodGroup(g) {
+      return g in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+    }
+
+    function isDonorList(g) {
+      return g in ['A+donor', 'A-donor', 'B+donor', 'B-donor',
+                   'AB+donor', 'AB-donor', 'O+donor', 'O-donor'];
+    }
+
+    // ---------- user profiles ----------
+    // Doc id == the user's auth uid.
+    // Any signed-in user can read (donors/receivers view each other's profiles);
+    // only the owner can create/edit/delete their own profile.
+    match /newUserCredentials/{uid} {
+      allow read: if signedIn();
+      allow create: if isOwner(uid)
+                    && request.resource.data.uid == request.auth.uid;
+      allow update: if isOwner(uid)
+                    && request.resource.data.uid == resource.data.uid;
+      allow delete: if isOwner(uid);
+    }
+
+    // ---------- private per-user data (e.g. date of birth) ----------
+    // Only the owner can read or write.
+    match /users/{uid}/private/{doc} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // ---------- blood requests (collections named after the blood group) ----------
+    // Doc id == the requester's uid, so one active request per user.
+    match /{group}/{uid} {
+      allow read: if signedIn() && isBloodGroup(group);
+      allow create, update: if isBloodGroup(group)
+                            && isOwner(uid)
+                            && request.resource.data.uid == request.auth.uid
+                            && request.resource.data.bloodGroup == group;
+      allow delete: if isBloodGroup(group) && isOwner(uid);
+    }
+
+    // ---------- donor lists ("A+donor", ...) ----------
+    // Auto-id docs carrying a `uid` field that must match the writer.
+    match /{list}/{docId} {
+      allow read: if signedIn() && isDonorList(list);
+      allow create: if isDonorList(list)
+                    && signedIn()
+                    && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isDonorList(list)
+                            && signedIn()
+                            && resource.data.uid == request.auth.uid;
+    }
+
+    // ---------- donations ----------
+    // Doc id is "<donorUid>_<receiverUid>".
+    match /donations/{id} {
+      allow read: if signedIn()
+                  && (resource.data.donorUid == request.auth.uid
+                      || resource.data.receiverUid == request.auth.uid);
+
+      allow create: if signedIn()
+                    && request.resource.data.donorUid == request.auth.uid
+                    && request.resource.data.receiverUid != request.auth.uid
+                    && id == request.auth.uid + '_' + request.resource.data.receiverUid
+                    && request.resource.data.status == 'pending';
+
+      // Donor may re-send/edit their offer; receiver may only change `status`.
+      allow update: if signedIn() && (
+        (resource.data.donorUid == request.auth.uid
+          && request.resource.data.donorUid == resource.data.donorUid
+          && request.resource.data.receiverUid == resource.data.receiverUid)
+        ||
+        (resource.data.receiverUid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status in ['accepted', 'declined', 'completed'])
+      );
+
+      allow delete: if signedIn() && resource.data.donorUid == request.auth.uid;
+    }
+
+    // ---------- legacy collections ----------
+    // Read-only for signed-in users until the code that uses them is removed.
+    match /userCredentials/{docId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    // Everything else (e.g. "experiment", "userIdHolder", "newUsersCredentials")
+    // is denied by default.
+  }
+}

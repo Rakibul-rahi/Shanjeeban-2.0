@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 class Profile extends StatefulWidget {
@@ -35,22 +34,7 @@ class _ProfileState extends State<Profile> {
   String? imageUrl;
 
 
-  @override
-  void initState() {
-    super.initState();
-    fetchUserData();
-  }
-
-  Future<void> fetchUserData() async {
-    try {
-      final Map<String, dynamic> args =
-      ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-      docID = args['docID'] ?? "ggh"; // Set a default value if docID is null
-      await getUserData();
-    } catch (e) {
-      print("Error fetching user data: $e");
-    }
-  }
+  bool _loaded = false; // build() fetches once; ModalRoute isn't usable in initState
 
 
   void logout() async{
@@ -75,7 +59,6 @@ class _ProfileState extends State<Profile> {
         context, '/editUserProfile',
         arguments: {
           'name': name,
-          'pass': password,
           'number': number,
           'email': email,
           'handle': handle,
@@ -112,9 +95,24 @@ class _ProfileState extends State<Profile> {
         String ds = userSnapshot['district'];
         String th = userSnapshot['thana'];
         int nmm = userSnapshot['number'];
-        String ps = userSnapshot['pass'];
         String em = userSnapshot['email'];
-        String dob = userSnapshot['dateOfBirth'];
+        // DOB is in an owner-only doc; fall back to the legacy public field.
+        final data = userSnapshot.data() as Map<String, dynamic>;
+        String dob = (data['dateOfBirth'] ?? '') as String;
+        final myUid = FirebaseAuth.instance.currentUser?.uid;
+        if (myUid != null && myUid == docID) {
+          try {
+            final privateSnap = await FirebaseFirestore.instance
+                .collection("users")
+                .doc(myUid)
+                .collection("private")
+                .doc("info")
+                .get();
+            dob = (privateSnap.data()?['dateOfBirth'] ?? dob) as String;
+          } catch (e) {
+            print('Could not read private info: $e'); // don't break the profile
+          }
+        }
         int a = userSnapshot['age'];
         int hg = userSnapshot['height'];
         int w = userSnapshot['weight'];
@@ -126,7 +124,6 @@ class _ProfileState extends State<Profile> {
         setState(() {
           name = nm;
           handle = hnd;
-          password = ps;
           dateOfBirth = dob;
           email = em;
           number = nmm;
@@ -161,7 +158,10 @@ class _ProfileState extends State<Profile> {
 
     final Map<String, dynamic> args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     docID = args['docID'];
-    getUserData();
+    if (!_loaded) {
+      _loaded = true;
+      getUserData();
+    }
 
     return Scaffold(
       backgroundColor: Colors.blueGrey,
@@ -353,7 +353,7 @@ class ProfileTiles extends StatelessWidget {
           width: 40, height: 40,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
-            color:  Colors.grey.withOpacity(0.1),
+            color:  Colors.grey.withValues(alpha: 0.1),
           ),
           child: Icon(
             icon,
@@ -372,7 +372,7 @@ class ProfileTiles extends StatelessWidget {
           width: 30, height: 30,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
           ),
           child: Icon(
             LineAwesomeIcons.angle_right,
